@@ -68,6 +68,13 @@ pub fn main() anyerror!void {
         const mouse = rl.getMousePosition();
         // Translate based on mouse right click
 
+        if (IsClickingButton(options.MoveButton)) {
+            ActiveButton = .Move;
+        }
+
+        if (IsClickingButton(options.DrawButton)) {
+            ActiveButton = .Draw;
+        }
         if (ActiveButton == .Move) {
             if (rl.isMouseButtonDown(.left)) {
                 var delta = rl.getMouseDelta();
@@ -87,18 +94,11 @@ pub fn main() anyerror!void {
                 camera.zoom = rl.math.clamp(camera.zoom * scaleFactor, 0.125, 64.0);
             }
         }
-        if (IsClickingButton(options.MoveButton)) {
-            ActiveButton = .Move;
-        }
-
-        if (IsClickingButton(options.DrawButton)) {
-            ActiveButton = .Draw;
-        }
 
         // Draw
         rl.beginDrawing();
-        defer rl.endDrawing();
         rl.clearBackground(BACKGROUND_COLOR);
+        defer rl.endDrawing();
         {
             camera.begin();
             defer camera.end();
