@@ -53,8 +53,6 @@ pub fn main() anyerror!void {
     rl.setTextureFilter(DrawButtonTexture, rl.TextureFilter.bilinear);
     rl.unloadImage(DrawButtonImage);
 
-    //
-
     defer rl.unloadTexture(MoveButtonTexture);
 
     const target = try rl.loadRenderTexture(screenWidth, screenHeight);
@@ -67,12 +65,16 @@ pub fn main() anyerror!void {
     while (!rl.windowShouldClose()) {
         const mouse = rl.getMousePosition();
         // Translate based on mouse right click
+        //
+        if (rl.isKeyPressed(.one)) {
+            print("Pressed 1\n", .{});
+        }
 
-        if (IsClickingButton(options.MoveButton)) {
+        if (IsClickingButton(options.MoveButton) or rl.isKeyPressed(.one)) {
             ActiveButton = .Move;
         }
 
-        if (IsClickingButton(options.DrawButton)) {
+        if (IsClickingButton(options.DrawButton) or rl.isKeyPressed(.two)) {
             ActiveButton = .Draw;
         }
         if (ActiveButton == .Move) {
@@ -119,6 +121,7 @@ pub fn main() anyerror!void {
 
         if (ActiveButton == .Draw) {
             // Handle Color Options Box
+            const mouseWorldPos = rl.getScreenToWorld2D(mouse, camera);
             const ColorOptionsBox = rl.Rectangle.init(20, 200, 200, 400);
             rl.drawRectangleRounded(ColorOptionsBox, 0.2, 100, OPTION_BOX_COLOR);
 
@@ -128,7 +131,7 @@ pub fn main() anyerror!void {
             if (rl.isMouseButtonDown(.left)) {
                 rl.beginTextureMode(target);
                 if (mouse.y > 50) {
-                    rl.drawCircle(@intFromFloat(mouse.x), @intFromFloat(mouse.y), brushStroke, color);
+                    rl.drawCircle(@intFromFloat(mouseWorldPos.x), @intFromFloat(mouseWorldPos.y), brushStroke, color);
                 }
                 rl.endTextureMode();
             }
